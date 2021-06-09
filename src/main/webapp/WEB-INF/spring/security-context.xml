@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-5.4.xsd">
+
+<bean id="bcrytPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></bean>
+
+<bean id="customDetailsService" class="org.donghyun.security.CustomUserDetailsService"></bean>
+
+
+	<security:http>
+
+		<security:intercept-url pattern="/sample/all" access="permitAll" />
+		<security:intercept-url pattern="/sample/member" access="hasRole('ROLE_MEMBER')" />
+		<security:intercept-url pattern="/sample/admin" access="hasRole('ROLE_ADMIN')" />
+		<security:form-login />
+
+<security:form-login login-page="/customLogin"/>
+
+<security:access-denied-handler error-page="/accessError"/> <!-- error-page는 jsp파일이 아니라 URL이다 -->
+
+<security:logout logout-url="/customLogout" invalidate-session="true"/>
+
+
+
+	</security:http>
+
+	<security:authentication-manager>
+		<security:authentication-provider user-service-ref="customDetailsService"> <!-- 0322 수정 -->
+		<security:password-encoder ref="bcrytPasswordEncoder"/>
+<!-- 			<security:user-service>
+				<security:user name="member" password="$2a$10$0OYY4.DS73LR31M8KfvYAeUVOv5CHiJPyrLbIqMiqNFnyO8rIX72y" authorities="ROLE_MEMBER" />
+				<security:user name="admin" password="{noop}admin" authorities="ROLE_MEMBER, ROLE_ADMIN" />
+			</security:user-service>  -->
+		</security:authentication-provider>
+	</security:authentication-manager>
+
+</beans>
